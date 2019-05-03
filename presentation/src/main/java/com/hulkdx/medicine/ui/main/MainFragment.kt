@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
+import android.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hulkdx.medicine.R
@@ -14,16 +14,16 @@ import hulkdx.com.domain.models.MedicineCollection
 import kotlinx.android.synthetic.main.fragment_main.*
 import timber.log.Timber
 import androidx.recyclerview.widget.DividerItemDecoration
-import hulkdx.com.domain.models.Medicine
 
 
 /**
  * Created by Mohammad Jafarzadeh Rezvan on 10/11/2018.
  *
  */
-class MainFragment : BaseFragment() {
+class MainFragment : BaseFragment(), SearchView.OnQueryTextListener {
 
     private lateinit var mAdapter: MedicineAdapter
+    private lateinit var mMainViewModel: MainViewModel
 
     private val mainActivity: MainActivity
         get() = this.activity as MainActivity
@@ -40,21 +40,18 @@ class MainFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mAdapter = MedicineAdapter{
-            Timber.i(it.toString())
-        }
+        adapterSetup()
 
-        mRecyclerView.adapter = mAdapter
-        mRecyclerView.layoutManager = LinearLayoutManager(activity)
+        recyclerSetup()
 
-        val itemDecor = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
-        mRecyclerView.addItemDecoration(itemDecor)
+        searchViewSetup()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
+        Timber.i("onActivityCreated")
         super.onActivityCreated(savedInstanceState)
 
-        val mMainViewModel = getViewModel<MainViewModel>(mainActivity.mViewModelProviderFactory)
+        mMainViewModel = getViewModel(mainActivity.mViewModelProviderFactory)
         mMainViewModel.getMedicineLiveData().observe(this, Observer {
             when (it) {
                 is MainContract.Loading -> medicineLoading()
@@ -62,7 +59,40 @@ class MainFragment : BaseFragment() {
                 is MainContract.LoadDataError -> medicineLoadingError(it.value)
             }
         })
-        mMainViewModel.loadData()
+        mMainViewModel.loadMedicines()
+    }
+
+    //---------------------------------------------------------------
+    // Setup Views:
+    //---------------------------------------------------------------
+
+    private fun adapterSetup() {
+        mAdapter = MedicineAdapter {
+            mainActivity.replaceFragment(R.id.fragmentContainer, DetailFragment.newInstance(it))
+        }
+    }
+
+    private fun recyclerSetup() {
+        mRecyclerView.adapter = mAdapter
+        mRecyclerView.layoutManager = LinearLayoutManager(activity)
+
+        val itemDecor = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+        mRecyclerView.addItemDecoration(itemDecor)
+    }
+
+    private fun searchViewSetup() {
+        mSearchView.setOnQueryTextListener(this)
+    }
+
+    //---------------------------------------------------------------
+    // SearchView
+    //---------------------------------------------------------------
+
+    override fun onQueryTextSubmit(query: String?): Boolean = false
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        mMainViewModel.loadMedicines(newText)
+        return false
     }
 
     //---------------------------------------------------------------

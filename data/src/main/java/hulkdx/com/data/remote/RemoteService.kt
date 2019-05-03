@@ -39,7 +39,7 @@ interface RemoteService {
                     .create()
 
             val retrofit = Retrofit.Builder()
-                    .baseUrl(ENDPOINT)
+                    .baseUrl("https://connect.popit.io")
                     .client(client)
                     .addConverterFactory(GsonConverterFactory.create(json))
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

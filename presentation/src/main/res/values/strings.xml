@@ -1,4 +1,15 @@
 <resources>
     <string name="app_name">presentation</string>
     <string name="no_medicines">No medicines</string>
+    <string name="search">Search</string>
+    <string name="name">Name</string>
+    <string name="totalPillsInSheet">Total pills in sheet</string>
+    <string name="medicineGroup">Medicine Group</string>
+    <string name="atc">ATC</string>
+    <string name="country">Country</string>
+    <string name="safeMargin">Safe Margin</string>
+    <string name="pillType">Pill Type</string>
+    <string name="hormonalPills">Hormonal Pills</string>
+    <string name="placeboPills">Placebo Pills</string>
+    <string name="safeMarginText">%1d hour(s) %2d minutes</string>
 </resources>

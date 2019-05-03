@@ -9,6 +9,7 @@ import javax.inject.Inject
 import hulkdx.com.domain.interactor.MedicineUseCase
 import hulkdx.com.domain.models.MedicineCollection
 import io.reactivex.functions.Consumer
+import timber.log.Timber
 
 /**
  * Created by Mohammad Jafarzadeh Rezvan on 10/11/2018.
@@ -20,14 +21,31 @@ class MainViewModel @Inject constructor(
 
     private var medicineLiveData = MutableLiveData<MainContract>()
 
+    //---------------------------------------------------------------
+    // Extra functions
+    //---------------------------------------------------------------
+
     override fun onCleared() {
         super.onCleared()
         mGetGithubRepositoryList.dispose()
     }
 
-    fun loadData() {
+    fun getMedicineLiveData(): LiveData<MainContract> = medicineLiveData
+
+    //---------------------------------------------------------------
+    // Main functions
+    //---------------------------------------------------------------
+
+    /**
+     * Load Medicines.
+     *
+     * @param searchText: if its null load all medicines and if its not null, search getMedicines
+     *                    with it.
+     */
+    fun loadMedicines(searchText: String? = null) {
         medicineLiveData.value = MainContract.Loading
         mGetGithubRepositoryList.execute(
+                searchText,
                 Consumer { medicineCollection ->
                     medicineLiveData.value = MainContract.LoadDataSuccess(medicineCollection)
                 },
@@ -36,7 +54,6 @@ class MainViewModel @Inject constructor(
                 })
     }
 
-    fun getMedicineLiveData(): LiveData<MainContract> = medicineLiveData
 }
 
 sealed class MainContract {

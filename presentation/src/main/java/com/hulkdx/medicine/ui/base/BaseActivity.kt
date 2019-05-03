@@ -124,4 +124,12 @@ abstract class BaseActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().add(containerViewId, fragment).commit()
     }
 
+    fun replaceFragment(containerViewId: Int, fragment: Fragment) {
+        supportFragmentManager
+                .beginTransaction()
+                .replace(containerViewId, fragment)
+                .addToBackStack(null)
+                .commitAllowingStateLoss()
+    }
+
 }
